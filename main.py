@@ -69,6 +69,7 @@ class Quiz:
             bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.i-1}",
                             reply_markup=KBDGenerator(['Начать тест']))
             self.i, self.counter, self.current_question, self.type = 0, 0, None, ""
+            
 
 
 if __name__ == "__main__":
