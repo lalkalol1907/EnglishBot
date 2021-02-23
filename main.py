@@ -2,6 +2,7 @@ import telebot
 from telebot import types
 import config
 from DB import Question
+import random
 
 bot = telebot.TeleBot(config.BOT_API)
 
@@ -35,6 +36,7 @@ class Quiz:
         self.counter = 0
         self.user_answers = []
         self.correct_answers = []
+        self.questions = []
 
     def WhichQuiz(self, message):
         if message.text == "Listening":
@@ -49,7 +51,9 @@ class Quiz:
 
     def Quiz(self, message):
         question = Question(self.type)
-        questions = question.getQuestion()
+        if self.questions == []:
+            self.questions = question.getQuestion()
+            random.shuffle(self.questions)
         if message.text != "Закончить тест":
             if self.current_question:
                 answer = question.getCorrectAnswer(self.current_question)
@@ -57,12 +61,12 @@ class Quiz:
                 self.user_answers.append(message.text)
                 if message.text == answer:
                     self.counter += 1
-            if len(questions) > self.i:
-                bot.send_message(message.from_user.id, text=f"{questions[self.i]}",
+            if len(self.questions) > self.i:
+                bot.send_message(message.from_user.id, text=f"{self.questions[self.i]}",
                                 reply_markup=KBDGenerator(['Закончить тест']))
                 if self.type == "Listening":
-                    bot.send_audio(message.from_user.id, audio=question.getUrl(questions[self.i]))
-                self.current_question = questions[self.i]
+                    bot.send_audio(message.from_user.id, audio=question.getUrl(self.questions[self.i]))
+                self.current_question = self.questions[self.i]
                 self.i += 1
                 bot.register_next_step_handler(message, self.Quiz)
             else:
@@ -80,7 +84,7 @@ class Quiz:
             bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.i-1}\n\n{compare_ans}",
                             reply_markup=KBDGenerator(['Начать тест']))
             question.DB.addUserResult(message.from_user.id, self.counter, self.i-1)
-            self.i, self.counter, self.current_question, self.type = 0, 0, None, ""
+            self.i, self.counter, self.current_question, self.type, self.user_answers, self.correct_answers, self.questions = 0, 0, None, "", [], [], []
         
 
 if __name__ == "__main__":
