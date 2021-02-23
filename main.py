@@ -3,7 +3,7 @@ from telebot import types
 import config
 from DB import Question
 import random
-from accessify import private
+
 
 bot = telebot.TeleBot(config.BOT_API)
 
@@ -13,14 +13,12 @@ def KBDGenerator(array):
         kbd.add(types.KeyboardButton(array[i]))
     return kbd
 
-
 @bot.message_handler(commands=['start'])
 def Start(message):
     bot.send_message(message.from_user.id, "Какой блок ты хочешь отработать?",
                      reply_markup=KBDGenerator(['Listening','Reading','Grammar','Vocabulary']))
     quiz = Quiz()
     bot.register_next_step_handler(message, quiz.WhichQuiz)
-
 
 @bot.message_handler(content_types=['text'])
 def TextMessage(message):
