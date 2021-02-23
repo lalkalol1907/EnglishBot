@@ -1,7 +1,7 @@
 import telebot
 from telebot import types
 import config
-from DB import Question
+from DB import Question, DB
 import random
 
 
@@ -38,6 +38,7 @@ class Quiz:
         self.user_answers = []
         self.correct_answers = []
         self.questions = []
+        self.DB = DB()
 
     @staticmethod
     def __SpaceDeleter3000(array_of_str):
@@ -91,12 +92,37 @@ class Quiz:
             if message.text[j] == answer[j]:
                 self.counter += 1 
 
+    def __CompareWith(self, userID, flag, *result):
+        if flag == 'last':
+            textflag = "последнего"
+            Res = self.DB.GetRes(flag, userID)
+        elif flag == 'avg':
+            textflag = "среднего"
+            Res = self.DB.GetRes(flag ,userID)
+        if not Res or Res == 0:
+            return ""
+        try:
+            CurRes = result[0]/result[1]
+            if Res > CurRes:
+                return f"\nТвой результат хуже {textflag} на {round((1-(Res/LastRes))*100)}%"
+            elif Res < CurRes:
+                return f"\nТвой результат лучше {textflag} на {round(((Res/LastRes)-1)*100)}%"
+            else:
+                return f"\nТвой результат не изменился относительно {textflag}"
+        except ZeroDivisionError:
+            return ""
+
+
+    def __CompareWithAvg(self, userID, *result):
+        pass
+
     def __EndQuiz(self, message):
         compare_ans = ""
         for i in range(len(self.user_answers)):
             compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
-        bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.additional_counter}\n\n{compare_ans}",
-                            reply_markup=KBDGenerator(['Начать тест']))
+        bot.send_message(message.from_user.id, f"""Тест закончен, результат:\n{self.counter} из {self.additional_counter}
+        {self.__CompareWith(message.from_user.id, 'last', self.counter, self.additional_counter)}{self.__CompareWith(message.from_user.id, 'avg', self.counter, self.additional_counter)}
+        \n\n{compare_ans}""", reply_markup=KBDGenerator(['Начать тест']))
         self.question.DB.addUserResult(message.from_user.id, self.counter, self.additional_counter)
         self.__Default()
 
