@@ -6,18 +6,27 @@ class DB:
     def __init__(self):
         self.conargs = conargs
 
-    def addUserResult(userID, *results):
-        print("addUserResult called")
-        return 0
+    def addUserResult(self, userID, *results):
         if len(results) == 1:
             result_percent = results[0]
         else:
             result_percent = round((results[0]/results[1])*100)
         con = pymysql.connect(**self.conargs)
         with con.cursor() as cur:
-            cur.execute(f"INSERT INTO ResultsTable VALUES()")
+            cur.execute(f"INSERT INTO ResultsTable VALUES({self.LastIDfinder('ResultsTable')+1}, '{userID}', {result_percent})")
         con.commit()
         con.close()
+
+    def LastIDfinder(self, TableName):
+        con = pymysql.connect(**self.conargs)
+        with con.cursor() as cur:
+            cur.execute(f"SELECT * FROM {TableName}")
+            rows = cur.fetchall()
+        try:    
+            return rows[len(rows)- 1][0]
+        except:
+            return -1
+        
 
 class Question:
     def __init__(self, type):
