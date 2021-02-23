@@ -42,7 +42,7 @@ class Quiz:
         self.questions = []
 
     @staticmethod
-    def __SpaceDelter3000(array_of_str):
+    def __SpaceDeleter3000(array_of_str):
         for i in range(len(array_of_str)):
             array_of_str[i].strip()
         return array_of_str
@@ -88,7 +88,7 @@ class Quiz:
         if answer.find(',') != -1:
             answer.split(',')
             userAns.split(',')
-            answer, userAns = self.__SpaceDelter3000(answer), self.__SpaceDelter3000(userAns) 
+            answer, userAns = self.__SpaceDeleter3000(answer), self.__SpaceDeleter3000(userAns) 
 
         for j in range(min(len(answer), len(message.text))):
             if message.text[j] == answer[j]:
