@@ -88,8 +88,8 @@ class Quiz:
             answer.split(',')
             userAns.split(',')
             answer, userAns = self.__SpaceDeleter3000(answer), self.__SpaceDeleter3000(userAns) 
-        for j in range(min(len(answer), len(message.text))):
-            if message.text[j] == answer[j]:
+        for j in range(min(len(answer), len(userAns))):
+            if userAns[j] == answer[j]:
                 self.counter += 1 
 
     def __CompareWith(self, userID, flag, *result):
@@ -102,25 +102,22 @@ class Quiz:
         if not Res or Res == 0:
             return ""
         try:
-            CurRes = result[0]/result[1]
+            CurRes = (result[0]/result[1])*100
+            delta = abs(round(Res - CurRes))
             if Res > CurRes:
-                return f"\nТвой результат хуже {textflag} на {round((1-(Res/LastRes))*100)}%"
+                return f"\nТвой результат хуже {textflag} на {delta}%"
             elif Res < CurRes:
-                return f"\nТвой результат лучше {textflag} на {round(((Res/LastRes)-1)*100)}%"
+                return f"\nТвой результат лучше {textflag} на {delta}%"
             else:
                 return f"\nТвой результат не изменился относительно {textflag}"
         except ZeroDivisionError:
             return ""
 
-
-    def __CompareWithAvg(self, userID, *result):
-        pass
-
     def __EndQuiz(self, message):
         compare_ans = ""
         for i in range(len(self.user_answers)):
             compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
-        bot.send_message(message.from_user.id, f"""Тест закончен, результат:\n{self.counter} из {self.additional_counter}
+        bot.send_message(message.from_user.id, f"""Тест закончен, результат:{self.counter} из {self.additional_counter}
         {self.__CompareWith(message.from_user.id, 'last', self.counter, self.additional_counter)}{self.__CompareWith(message.from_user.id, 'avg', self.counter, self.additional_counter)}
         \n\n{compare_ans}""", reply_markup=KBDGenerator(['Начать тест']))
         self.question.DB.addUserResult(message.from_user.id, self.counter, self.additional_counter)

@@ -33,16 +33,16 @@ class DB:
     def GetRes(self, flag, userID):
         con = pymysql.connect(**self.conargs)
         with con.cursor() as cur:
-            cur.execute(f"SELECT result FROM ResultsTable WHERE UserID = '{userID}'")
+            cur.execute(f"SELECT * FROM ResultsTable WHERE UserID = '{userID}'")
             rows = cur.fetchall()
         try:
             if flag == 'last': 
-                return rows[len(rows)-1]
+                return rows[len(rows)-1][2]
             elif flag == 'avg':
                 sum_for_avg = 0
                 div_for_avg = 0
                 for row in rows:
-                    sum_for_avg += int(row)
+                    sum_for_avg += int(row[2])
                     div_for_avg += 1
                 return round(sum_for_avg/div_for_avg)
         except:
