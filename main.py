@@ -87,7 +87,6 @@ class Quiz:
             answer.split(',')
             userAns.split(',')
             answer, userAns = self.__SpaceDeleter3000(answer), self.__SpaceDeleter3000(userAns) 
-
         for j in range(min(len(answer), len(message.text))):
             if message.text[j] == answer[j]:
                 self.counter += 1 
