@@ -1,7 +1,7 @@
 import telebot
 from telebot import types
 import config
-from question import Question
+from DB import Question
 
 bot = telebot.TeleBot(config.BOT_API)
 
@@ -71,16 +71,17 @@ class Quiz:
                     compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
                 bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.i}\n\n{compare_ans}",
                                 reply_markup=KBDGenerator(['Начать тест']))
+                question.DB.addUserResult(message.from_user.id, self.counter, self.i)
                 self.i, self.counter, self.current_question, self.type = 0, 0, None, ""
         else:
             compare_ans = ""
-                for i in range(len(self.user_answers)):
-                    compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
+            for i in range(len(self.user_answers)):
+                compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
             bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.i-1}\n\n{compare_ans}",
                             reply_markup=KBDGenerator(['Начать тест']))
+            question.DB.addUserResult(message.from_user.id, self.counter, self.i-1)
             self.i, self.counter, self.current_question, self.type = 0, 0, None, ""
-            
-
+        
 
 if __name__ == "__main__":
     bot.polling()

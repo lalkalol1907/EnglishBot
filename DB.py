@@ -1,10 +1,29 @@
 import pymysql
 from config import conargs
 
+class DB:
+
+    def __init__(self):
+        self.conargs = conargs
+
+    def addUserResult(userID, *results):
+        print("addUserResult called")
+        return 0
+        if len(results) == 1:
+            result_percent = results[0]
+        else:
+            result_percent = round((results[0]/results[1])*100)
+        con = pymysql.connect(**self.conargs)
+        with con.cursor() as cur:
+            cur.execute(f"INSERT INTO ResultsTable VALUES()")
+        con.commit()
+        con.close()
+
 class Question:
     def __init__(self, type):
-        self.conargs = conargs
         self.type = type
+        self.DB = DB()
+        self.conargs = self.DB.conargs
         if type == "Listening":
             self.url = self.getUrl()
         self.text = self.getQuestion()
@@ -39,6 +58,4 @@ class Question:
             for row in rows:
                 URL = row[3]
         return URL
-
-
 
