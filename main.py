@@ -33,6 +33,8 @@ class Quiz:
         self.i = 0
         self.current_question = None
         self.counter = 0
+        self.user_answers = []
+        self.correct_answers = []
 
     def WhichQuiz(self, message):
         if message.text == "Listening":
@@ -51,6 +53,8 @@ class Quiz:
         if message.text != "Закончить тест":
             if self.current_question:
                 answer = question.getCorrectAnswer(self.current_question)
+                self.correct_answers.append(answer)
+                self.user_answers.append(message.text)
                 if message.text == answer:
                     self.counter += 1
             if len(questions) > self.i:
@@ -62,7 +66,10 @@ class Quiz:
                 self.i += 1
                 bot.register_next_step_handler(message, self.Quiz)
             else:
-                bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.i}",
+                compare_ans = ""
+                for i in range(len(self.user_answers)):
+                    compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
+                bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.i}\n\n{compare_ans}",
                                 reply_markup=KBDGenerator(['Начать тест']))
                 self.i, self.counter, self.current_question, self.type = 0, 0, None, ""
         else:
