@@ -10,7 +10,10 @@ class DB:
         if len(results) == 1:
             result_percent = results[0]
         else:
-            result_percent = round((results[0]/results[1])*100)
+            try:
+                result_percent = round((results[0]/results[1])*100)
+            except ZeroDivisionError:
+                return 0
         con = pymysql.connect(**self.conargs)
         with con.cursor() as cur:
             cur.execute(f"INSERT INTO ResultsTable VALUES({self.LastIDfinder('ResultsTable')+1}, '{userID}', {result_percent})")

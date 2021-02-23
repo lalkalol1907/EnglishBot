@@ -30,15 +30,22 @@ def TextMessage(message):
 
 class Quiz:
 
-    def __init__(self):
+    def __init__(self): 
         self.type = ""
         self.i = 0
+        self.question = None
         self.current_question = None
         self.counter = 0 # Правильные ответы
         self.additional_counter = 0 # Все ответы
         self.user_answers = []
         self.correct_answers = []
         self.questions = []
+
+    @staticmethod
+    def __SpaceDelter3000(array_of_str):
+        for i in range(len(array_of_str)):
+            array_of_str[i].strip()
+        return array_of_str
 
     def WhichQuiz(self, message):
         if message.text == "Listening":
@@ -49,22 +56,21 @@ class Quiz:
             self.type="Grammar"
         elif message.text == "Vocabulary":
             self.type = "Vocabulary"
+        self.question = Question(self.type)
+        self.questions = self.question.getQuestion()
+        random.shuffle(self.questions)
         self.__Quiz(message)
 
-    @private
+
     def __Quiz(self, message):
-        question = Question(self.type)
-        if self.questions == []:
-            self.questions = question.getQuestion()
-            random.shuffle(self.questions)
         if message.text != "Закончить тест":
             if self.current_question:
-                self.__AnsCheck(message, question.getCorrectAnswer(self.current_question))
+                self.__AnsCheck(message)
             if len(self.questions) > self.i:
                 bot.send_message(message.from_user.id, text=f"{self.questions[self.i]}",
                                 reply_markup=KBDGenerator(['Закончить тест']))
                 if self.type == "Listening":
-                    bot.send_voice(message.from_user.id, audio=question.getUrl(self.questions[self.i]))
+                    bot.send_voice(message.from_user.id, audio=self.question.getUrl(self.questions[self.i]))
                 self.current_question = self.questions[self.i]
                 self.i += 1
                 bot.register_next_step_handler(message, self.__Quiz)
@@ -73,27 +79,40 @@ class Quiz:
         else:
             self.__EndQuiz(message)
 
-    @private
-    def __AnsCheck(self, message, answer):
+    def __AnsCheck(self, message):
+        answer = self.question.getCorrectAnswer(self.current_question)
         self.correct_answers.append(answer)
         self.user_answers.append(message.text)
-        for j in range(len(answer))
+        self.additional_counter += len(answer)
+        userAns = message.text
+        if answer.find(',') != -1:
+            answer.split(',')
+            userAns.split(',')
+            answer, userAns = self.__SpaceDelter3000(answer), self.__SpaceDelter3000(userAns) 
+
+        for j in range(min(len(answer), len(message.text))):
             if message.text[j] == answer[j]:
                 self.counter += 1 
 
-    @private
     def __EndQuiz(self, message):
         compare_ans = ""
         for i in range(len(self.user_answers)):
             compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
         bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.additional_counter}\n\n{compare_ans}",
                             reply_markup=KBDGenerator(['Начать тест']))
-        question.DB.addUserResult(message.from_user.id, self.counter, self.additional_counter)
+        self.question.DB.addUserResult(message.from_user.id, self.counter, self.additional_counter)
         self.__Default()
 
-    @private
     def __Default(self):
-        return 0
+        self.type = ""
+        self.i = 0
+        self.question = None
+        self.current_question = None
+        self.counter = 0 # Правильные ответы
+        self.additional_counter = 0 # Все ответы
+        self.user_answers = []
+        self.correct_answers = []
+        self.questions = []
         
 
 if __name__ == "__main__":
