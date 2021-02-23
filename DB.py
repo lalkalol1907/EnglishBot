@@ -26,6 +26,12 @@ class DB:
             return rows[len(rows)- 1][0]
         except:
             return -1
+
+    def GetLastRes(self):
+        pass
+
+    def GetAvgRes(self):
+        pass
         
 
 class Question:

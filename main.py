@@ -3,6 +3,7 @@ from telebot import types
 import config
 from DB import Question
 import random
+from accessify import private
 
 bot = telebot.TeleBot(config.BOT_API)
 
@@ -33,7 +34,8 @@ class Quiz:
         self.type = ""
         self.i = 0
         self.current_question = None
-        self.counter = 0
+        self.counter = 0 # Правильные ответы
+        self.additional_counter = 0 # Все ответы
         self.user_answers = []
         self.correct_answers = []
         self.questions = []
@@ -47,44 +49,51 @@ class Quiz:
             self.type="Grammar"
         elif message.text == "Vocabulary":
             self.type = "Vocabulary"
-        self.Quiz(message)
+        self.__Quiz(message)
 
-    def Quiz(self, message):
+    @private
+    def __Quiz(self, message):
         question = Question(self.type)
         if self.questions == []:
             self.questions = question.getQuestion()
             random.shuffle(self.questions)
         if message.text != "Закончить тест":
             if self.current_question:
-                answer = question.getCorrectAnswer(self.current_question)
-                self.correct_answers.append(answer)
-                self.user_answers.append(message.text)
-                if message.text == answer:
-                    self.counter += 1
+                self.__AnsCheck(message, question.getCorrectAnswer(self.current_question))
             if len(self.questions) > self.i:
                 bot.send_message(message.from_user.id, text=f"{self.questions[self.i]}",
                                 reply_markup=KBDGenerator(['Закончить тест']))
                 if self.type == "Listening":
-                    bot.send_audio(message.from_user.id, audio=question.getUrl(self.questions[self.i]))
+                    bot.send_voice(message.from_user.id, audio=question.getUrl(self.questions[self.i]))
                 self.current_question = self.questions[self.i]
                 self.i += 1
-                bot.register_next_step_handler(message, self.Quiz)
+                bot.register_next_step_handler(message, self.__Quiz)
             else:
-                compare_ans = ""
-                for i in range(len(self.user_answers)):
-                    compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
-                bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.i}\n\n{compare_ans}",
-                                reply_markup=KBDGenerator(['Начать тест']))
-                question.DB.addUserResult(message.from_user.id, self.counter, self.i)
-                self.i, self.counter, self.current_question, self.type = 0, 0, None, ""
+                self.__EndQuiz(message)
         else:
-            compare_ans = ""
-            for i in range(len(self.user_answers)):
-                compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
-            bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.i-1}\n\n{compare_ans}",
+            self.__EndQuiz(message)
+
+    @private
+    def __AnsCheck(self, message, answer):
+        self.correct_answers.append(answer)
+        self.user_answers.append(message.text)
+        for j in range(len(answer))
+            if message.text[j] == answer[j]:
+                self.counter += 1 
+
+    @private
+    def __EndQuiz(self, message):
+        compare_ans = ""
+        for i in range(len(self.user_answers)):
+            compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
+        bot.send_message(message.from_user.id, f"Тест закончен, результат:\n{self.counter} из {self.additional_counter}\n\n{compare_ans}",
                             reply_markup=KBDGenerator(['Начать тест']))
-            question.DB.addUserResult(message.from_user.id, self.counter, self.i-1)
-            self.i, self.counter, self.current_question, self.type, self.user_answers, self.correct_answers, self.questions = 0, 0, None, "", [], [], []
+        question.DB.addUserResult(message.from_user.id, self.counter, self.additional_counter)
+        self.__Default()
+
+    @private
+    def __Default(self):
+        return 0
         
 
 if __name__ == "__main__":
