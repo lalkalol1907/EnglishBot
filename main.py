@@ -52,7 +52,7 @@ class Quiz:
         elif message.text == "Reading":
             self.type = "Reading"
         elif message.text == "Grammar":
-            self.type="Grammar"
+            self.type = "Grammar"
         elif message.text == "Vocabulary":
             self.type = "Vocabulary"
         self.question = Question(self.type)
@@ -68,7 +68,7 @@ class Quiz:
             if len(self.questions) > self.i:
                 bot.send_message(message.from_user.id, text=f"{self.questions[self.i]}",
                                 reply_markup=KBDGenerator(['Закончить тест']))
-                if self.type == "Listening":
+                if self.question.HasUrl(self.questions[self.i]):
                     bot.send_voice(message.from_user.id, audio=self.question.getUrl(self.questions[self.i]))
                 self.current_question = self.questions[self.i]
                 self.i += 1

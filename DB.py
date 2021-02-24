@@ -4,7 +4,7 @@ from config import conargs
 class DB:
 
     def __init__(self):
-        self.conargs = conargs
+        self._conargs = conargs
 
     def addUserResult(self, userID, *results):
         if len(results) == 1:
@@ -14,14 +14,14 @@ class DB:
                 result_percent = round((results[0]/results[1])*100)
             except ZeroDivisionError:
                 return 0
-        con = pymysql.connect(**self.conargs)
+        con = pymysql.connect(**self._conargs)
         with con.cursor() as cur:
-            cur.execute(f"INSERT INTO ResultsTable VALUES({self.LastIDfinder('ResultsTable')+1}, '{userID}', {result_percent})")
+            cur.execute(f"INSERT INTO ResultsTable VALUES({self._LastIDfinder('ResultsTable')+1}, '{userID}', {result_percent})")
         con.commit()
         con.close()
 
-    def LastIDfinder(self, TableName):
-        con = pymysql.connect(**self.conargs)
+    def _LastIDfinder(self, TableName):
+        con = pymysql.connect(**self._conargs)
         with con.cursor() as cur:
             cur.execute(f"SELECT * FROM {TableName}")
             rows = cur.fetchall()
@@ -31,7 +31,7 @@ class DB:
             return -1
 
     def GetRes(self, flag, userID):
-        con = pymysql.connect(**self.conargs)
+        con = pymysql.connect(**self._conargs)
         with con.cursor() as cur:
             cur.execute(f"SELECT * FROM ResultsTable WHERE UserID = '{userID}'")
             rows = cur.fetchall()
@@ -50,40 +50,42 @@ class DB:
         
 
 class Question:
-    def __init__(self, type):
-        self.type = type
-        self.DB = DB()
-        self.conargs = self.DB.conargs
-        if type == "Listening":
-            self.url = self.getUrl()
-        self.text = self.getQuestion()
 
+    def __init__(self, type):
+        self.__type = type
+        self.__DB = DB()
+        self.__conargs = self.__DB._conargs
+
+    def HasUrl(self, question):
+        if self.__type == "Listening":
+            return True
+        return False
 
     def getQuestion(self):
-        con = pymysql.connect(**self.conargs)
+        con = pymysql.connect(**self.__conargs)
         questions = []
         with con.cursor() as cur:
-            cur.execute(f"SELECT * FROM {self.type}Table")
+            cur.execute(f"SELECT * FROM {self.__type}Table")
             rows = cur.fetchall()
             for row in rows:
                 questions.append(row[1])
         return questions
 
     def getCorrectAnswer(self, question):
-        con = pymysql.connect(**self.conargs)
+        con = pymysql.connect(**self.__conargs)
         CorrectAns = ""
         with con.cursor() as cur:
-            cur.execute(f"SELECT * FROM {self.type}Table WHERE question = '{question}'")
+            cur.execute(f"SELECT * FROM {self.__type}Table WHERE question = '{question}'")
             rows = cur.fetchall()
             for row in rows:
                 CorrectAns = row[2]
         return CorrectAns
 
     def getUrl(self, question):
-        con = pymysql.connect(**self.conargs)
+        con = pymysql.connect(**self.__conargs)
         URL = ""
         with con.cursor() as cur:
-            cur.execute(f"SELECT * FROM {self.type}Table WHERE question = '{question}'")
+            cur.execute(f"SELECT * FROM {self.__type}Table WHERE question = '{question}'")
             rows = cur.fetchall()
             for row in rows:
                 URL = row[3]
