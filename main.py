@@ -60,7 +60,6 @@ class Quiz:
         random.shuffle(self.questions)
         self.__Quiz(message)
 
-
     def __Quiz(self, message):
         if message.text != "Закончить тест":
             if self.current_question:
@@ -78,14 +77,12 @@ class Quiz:
         else:
             self.__EndQuiz(message)
 
-    
     def __AnswerFormatter3000(self, answer, userAns):
         if answer.find(',') != -1:
             answer.split(',')
             userAns.split(',')
             answer, userAns = self.__SpaceDeleter3000(answer), self.__SpaceDeleter3000(userAns)
         return answer, userAns
-        
 
     def __AnsCheck(self, message):
         answer = self.question.getCorrectAnswer(self.current_question)
