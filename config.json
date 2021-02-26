@@ -1,0 +1,13 @@
+{
+    "DB" : {
+        "host" : "eu-cdbr-west-03.cleardb.net",
+        "user" : "bff85418a2dee9",
+        "password" : "97ea350b",
+        "db" : "heroku_694c0e01d65a61a",
+        "charset" : "utf8mb4"
+    },
+    "bot" : {
+        "TOKEN" : "",
+        "WEBHOOK_URL" : ""
+    }
+}
