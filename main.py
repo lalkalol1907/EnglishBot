@@ -116,7 +116,7 @@ class Quiz:
     def __EndQuiz(self, message):
         compare_ans = ""
         for i in range(len(self.user_answers)):
-            compare_ans+=f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
+            compare_ans += f"{i+1}) Correct: {self.correct_answers[i]}  Your: {self.user_answers[i]}\n"
         bot.send_message(message.from_user.id, f"""Тест закончен, результат:{self.counter} из {self.additional_counter}
         {self.__CompareWith(message.from_user.id, 'last', self.counter, self.additional_counter)}{self.__CompareWith(message.from_user.id, 'avg', self.counter, self.additional_counter)}
         \n\n{compare_ans}""", reply_markup=KBDGenerator(['Начать тест']))

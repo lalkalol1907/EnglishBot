@@ -53,8 +53,8 @@ class Question:
 
     def __init__(self, type):
         self.__type = type
-        self.__DB = DB()
-        self.__conargs = self.__DB._conargs
+        self.DB = DB()
+        self.__conargs = self.DB._conargs
 
     def HasUrl(self, question):
         if self.__type == "Listening":
