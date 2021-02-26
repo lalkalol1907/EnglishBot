@@ -78,16 +78,22 @@ class Quiz:
         else:
             self.__EndQuiz(message)
 
+    
+    def __AnswerFormatter3000(self, answer, userAns):
+        if answer.find(',') != -1:
+            answer.split(',')
+            userAns.split(',')
+            answer, userAns = self.__SpaceDeleter3000(answer), self.__SpaceDeleter3000(userAns)
+        return answer, userAns
+        
+
     def __AnsCheck(self, message):
         answer = self.question.getCorrectAnswer(self.current_question)
         self.correct_answers.append(answer)
         self.user_answers.append(message.text)
         self.additional_counter += len(answer)
         userAns = message.text
-        if answer.find(',') != -1:
-            answer.split(',')
-            userAns.split(',')
-            answer, userAns = self.__SpaceDeleter3000(answer), self.__SpaceDeleter3000(userAns) 
+        answer, userAns = self.__AnswerFormatter3000(answer, userAns)
         for j in range(min(len(answer), len(userAns))):
             if userAns[j] == answer[j]:
                 self.counter += 1 
