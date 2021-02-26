@@ -68,7 +68,7 @@ class Quiz:
                 bot.send_message(message.from_user.id, text=f"{self.questions[self.i]}",
                                 reply_markup=KBDGenerator(['Закончить тест']))
                 if self.question.HasUrl(self.questions[self.i]):
-                    bot.send_voice(message.from_user.id, audio=self.question.getUrl(self.questions[self.i]))
+                    bot.send_voice(message.from_user.id, voice=self.question.getUrl(self.questions[self.i]))
                 self.current_question = self.questions[self.i]
                 self.i += 1
                 bot.register_next_step_handler(message, self.__Quiz)
@@ -140,5 +140,3 @@ class Quiz:
 
 if __name__ == "__main__":
     bot.polling()
-
-

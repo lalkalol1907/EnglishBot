@@ -33,6 +33,7 @@ class BOTProvider(JSONProvider):
         self.TOKEN = self.get("BOT", "TOKEN")
         self.webhook_url = 'https://%s.herokuapp.com/hook' % environ.get(self.get("BOT", "WEBHOOK_URL"))
 
+
 var_DBProvider = DBProvider(config_path)
 var_BOTProvider = BOTProvider(config_path)
 
