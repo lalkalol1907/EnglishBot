@@ -1,6 +1,9 @@
 # EnglishBot
+this bot allows you to efficiently prepare for the exam on the go, in the telegram
 
-## config.json structure:
+## Configuration and starting
+
+### config.json structure:
 ```json
 "DB" : {
     "host" : "",
@@ -15,13 +18,13 @@
 }
 ```
 
-## How to run this bot:
+### How to run this bot:
 
-### WebHooks
+#### WebHooks
 ```shell
 $ python FlaskStarter.py
 ```
-### Polling
+#### Polling
 ```shell
 $ python main.py
 ```
