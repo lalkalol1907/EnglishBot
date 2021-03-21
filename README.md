@@ -1,6 +1,6 @@
 # EnglishBot
 
-##config.json structure:
+## config.json structure:
 ```json
 "DB" : {
     "host" : "",
@@ -15,13 +15,13 @@
 }
 ```
 
-##How to run this bot:
+## How to run this bot:
 
-###WebHooks
+### WebHooks
 ```shell
 $ python FlaskStarter.py
 ```
-###Polling
+### Polling
 ```shell
 $ python main.py
 ```
