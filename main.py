@@ -15,7 +15,7 @@ def KBDGenerator(array):
 
 @bot.message_handler(commands=['start'])
 def Start(message):
-    bot.send_message(message.from_user.id, "Choose block:",
+    bot.send_message(message.from_user.id, "Choose section:",
                      reply_markup=KBDGenerator(['Listening','Reading','Grammar','Vocabulary']))
     quiz = Quiz()
 
