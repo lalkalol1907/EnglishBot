@@ -51,7 +51,7 @@ class Quiz:
         if message.text == "Listening":
             self.type = "Listening"
         elif message.text == "Reading":
-            self.type = "Readi#ng"
+            self.type = "Reading"
         elif message.text == "Grammar":
             self.type = "Grammar"
         elif message.text == "Vocabulary":
